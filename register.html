@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Original Concert 3.0</title>
+    <meta name="description" content="Register now for Original Concert 3.0. Get your free personalized ticket and attending flyer for this unforgettable worship experience.">
+    <meta name="keywords" content="Register, Original Concert 3.0, Free Tickets, Throne Nation, Nsugbe, Gospel Event">
+    <meta name="author" content="Throne Nation">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#050505">
+    <link rel="canonical" href="https://original-concert.vercel.app/register.html">
+    <link rel="icon" type="image/png" href="assets/logo.png">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Original Concert 3.0 | Throne Nation">
+    <meta property="og:title" content="Register for Original Concert 3.0">
+    <meta property="og:description" content="Complete your registration to receive your personalized concert ticket and attending flyer.">
+    <meta property="og:image" content="https://original-concert.vercel.app/assets/originial%20concert%203%20all%20artists.png">
+    <meta property="og:image:alt" content="Original Concert 3.0 All Artists">
+    <meta property="og:url" content="https://original-concert.vercel.app/register">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Register for Original Concert 3.0">
+    <meta name="twitter:description" content="Complete your registration to receive your personalized concert ticket and attending flyer.">
+    <meta name="twitter:image" content="https://original-concert.vercel.app/assets/originial%20concert%203%20all%20artists.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <style>
+        .register-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
+        }
+
+        .register-card {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+            transition: var(--transition-smooth);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--glow-red);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--glow-red);
+            background: rgba(209, 0, 0, 0.05);
+        }
+
+        .profile-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid var(--glow-red);
+            margin: 0 auto 20px;
+            display: none;
+            object-fit: cover;
+            box-shadow: 0 0 15px var(--glow-red);
+        }
+
+        /* Crop Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .cropper-container {
+            max-height: 400px;
+            margin-bottom: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            padding: 10px 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--glass-border);
+            border-top: 4px solid var(--glow-red);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><img src="assets/logo.png" alt="Throne Nation Logo">THRONE <span>NATION</span></a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="register.html" class="btn-primary" style="padding: 8px 20px; font-size: 0.8rem;">Get Ticket</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="register-container" style="margin-top: 100px;">
+        <div class="register-card glass-card">
+            <div class="loading-overlay" id="loading">
+                <div class="spinner"></div>
+                <p>Generating your ticket...</p>
+            </div>
+
+            <h1 class="heading-font" style="font-size: 2rem; margin-bottom: 10px;">Register for Original Concert</h1>
+            <p style="color: var(--secondary-text); font-size: 0.9rem; margin-bottom: 30px;">
+                Complete your registration to receive your personalized concert ticket and attending flyer.
+            </p>
+
+            <img src="" alt="Profile Preview" class="profile-preview" id="profile-preview">
+
+            <form id="registration-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" class="form-control" placeholder="Enter your full name" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="080..." required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" class="form-control" placeholder="email@example.com" required>
+                </div>
+
+                <div class="upload-area" id="upload-area">
+                    <p id="upload-text" style="color: var(--secondary-text);">Click to upload your portrait</p>
+                    <input type="file" id="photo-input" accept="image/png, image/jpeg, image/webp" style="display: none;">
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 20px;">Get My Ticket</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="crop-modal">
+        <div class="modal-content">
+            <h2 class="heading-font text-center" style="margin-bottom: 20px;">Crop Your Photo</h2>
+            <div class="cropper-container">
+                <img id="crop-image" style="max-width: 100%;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-cancel-crop">Cancel</button>
+                <button class="btn-primary" id="btn-confirm-crop">Confirm Crop</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-container container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 60px;">
+            <div style="text-align: center; display: flex; flex-direction: column; gap: 5px;">
+                <div style="font-weight: bold; color: var(--white);">Stream Guys NG X Throne Nation</div>
+                <div>&copy; 2026 Throne Nation. All rights reserved.</div>
+            </div>
+            <div class="footer-links" style="position: absolute; right: 20px; display: flex; gap: 20px;">
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/register.js"></script>
+</body>
+</html>

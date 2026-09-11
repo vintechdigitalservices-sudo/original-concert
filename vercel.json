@@ -1,0 +1,21 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/register",
+      "destination": "/register.html"
+    },
+    {
+      "source": "/ticket",
+      "destination": "/ticket.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/privacy.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/terms.html"
+    }
+  ]
+}
