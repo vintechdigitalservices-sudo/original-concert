@@ -565,13 +565,30 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
     font-size: 0.8rem;
     color: var(--secondary-text);
+    min-height: 60px;
+}
+
+.footer-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    text-align: center;
+}
+
+.footer-brand .footer-title {
+    font-weight: bold;
+    color: var(--white);
 }
 
 .footer-links {
     display: flex;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .footer-links a {
@@ -580,4 +597,27 @@ button {
 
 .footer-links a:hover {
     color: var(--white);
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        gap: 14px;
+    }
+
+    .footer-brand {
+        align-items: center;
+    }
+
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .footer-links a {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
 }

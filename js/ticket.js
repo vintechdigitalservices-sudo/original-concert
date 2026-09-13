@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function renderFlyer() {
-        const bgImg = await loadImage('assets/originial concert 3 im attending.png');
+        const bgImg = await loadImage('assets/original-concert-3-im-attending.webp');
 
         // 1. Draw User Portrait FIRST (so it's behind the background frame).
         // Enlarged + pulled up so it fills the frame opening (no gap top-right).
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function getSocialImageFile() {
         try {
-            const res = await fetch('assets/originial concert 3 all artists.png');
+            const res = await fetch('assets/original-concert-3-all-artists.webp');
             const blob = await res.blob();
             return new File([blob], 'original-concert-3-all-artists.png', { type: blob.type || 'image/png' });
         } catch (e) {
