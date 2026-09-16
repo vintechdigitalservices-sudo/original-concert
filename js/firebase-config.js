@@ -16,16 +16,25 @@ const firebaseConfig = {
 
 (function initSharedFirebase() {
   if (typeof firebase === 'undefined' || !firebase.initializeApp) {
-    console.error('Firebase SDK not loaded before js/firebase-config.js');
+    console.error('[firebase-config] Firebase core SDK was NOT loaded before js/firebase-config.js. Check the script tags in your HTML.');
     return;
   }
-  if (!firebase.apps || !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
+  try {
+    if (!firebase.apps || !firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+  } catch (err) {
+    console.error('[firebase-config] firebase.initializeApp failed:', err);
   }
   try {
-    window.db = firebase.firestore();
+    if (typeof firebase.firestore === 'function') {
+      window.db = firebase.firestore();
+      console.log('[firebase-config] Firestore initialised for project:', firebaseConfig.projectId);
+    } else {
+      console.error('[firebase-config] firebase.firestore is not available. Ensure firebase-firestore-compat.js is loaded BEFORE js/firebase-config.js.');
+    }
   } catch (err) {
-    console.error('Failed to init Firestore', err);
+    console.error('[firebase-config] Failed to init Firestore:', err);
   }
   window.firebaseConfig = firebaseConfig;
 })();

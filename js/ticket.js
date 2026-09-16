@@ -9,14 +9,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Allow opening a ticket from its QR verification link (?ticket=ID)
-    // by loading the data-only record from Firestore. Photos are never
-    // stored, so the flyer portrait only appears on the original device.
+    // by loading the data-only record from Firestore.
     if (!attendee && ticketParam && window.db) {
         try {
             const snap = await window.db.collection('tickets').doc(ticketParam).get();
             if (snap.exists) {
                 attendee = snap.data();
-                attendee.photo = null;
+                // Photo is now stored as Base64 in Firestore, so we can use it.
+                if (!attendee.photo) {
+                    attendee.photo = null;
+                }
             }
         } catch (e) { /* fall through to redirect below */ }
     }

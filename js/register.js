@@ -63,9 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
         cropModal.style.display = 'none';
     });
 
+    // Helper: guarantee the loading overlay never hangs forever by racing the
+    // Firestore request against a hard timeout.
+    const withTimeout = (promise, ms, message) =>
+        Promise.race([
+            promise,
+            new Promise((_, reject) => setTimeout(() => reject(new Error(message)), ms))
+        ]);
+
     // Registration Submission
     registrationForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('[Registration] Submit triggered');
 
         if (!croppedImageData) {
             alert('Please upload and crop your photo first.');
@@ -76,6 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const phone = document.getElementById('phone').value.trim();
         const email = document.getElementById('email').value.trim();
 
+        console.log('[Registration] Validating fields...', { fullName, phone, email });
+
         // Simple Nigerian phone validation (starts with 0 or +234)
         const phoneRegex = /^(?:\+234|0)[789]\d{9}$/;
         if (!phoneRegex.test(phone)) {
@@ -84,29 +95,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         loadingOverlay.style.display = 'flex';
+        console.log('[Registration] Loading overlay shown');
 
         try {
             if (!window.db) {
+                console.error('[Registration] window.db is undefined');
                 throw new Error('Database is not ready. Please check your connection and try again.');
             }
 
             // Ticket ID Generation (unique, human-readable)
             const ticketId = 'OC26-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase();
             const attendeeId = 'ATT-' + Date.now();
+            console.log('[Registration] Generated Ticket ID:', ticketId);
 
-            // Save data-only record to Firestore `tickets` collection.
-            // The portrait image is NOT stored: it is only used in the
-            // browser to generate the attending flyer.
+            // Save record to Firestore `tickets` collection.
+            // Including the portrait image as Base64 so it's recoverable on other devices.
             const ticketRecord = {
                 id: attendeeId,
                 ticketId: ticketId,
                 fullName: fullName,
                 phone: phone,
                 email: email,
+                photo: croppedImageData,
                 createdAt: new Date().toISOString()
             };
 
-            await window.db.collection('tickets').doc(ticketId).set(ticketRecord);
+            console.log('[Registration] Attempting Firestore write for:', ticketId);
+            try {
+                await withTimeout(
+                    window.db.collection('tickets').doc(ticketId).set(ticketRecord),
+                    20000,
+                    'The database request timed out after 20 seconds.'
+                );
+                console.log('[Registration] Firestore write successful');
+            } catch (dbErr) {
+                console.error('[Registration] Firestore write failed:', dbErr);
+                const reason = (dbErr && dbErr.message ? dbErr.message : String(dbErr)) || 'Unknown database error.';
+                alert('Could not save your registration to the database:\n\n' + reason);
+                loadingOverlay.style.display = 'none';
+                return;
+            }
 
             const attendeeData = {
                 ...ticketRecord,
@@ -114,10 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             localStorage.setItem('currentAttendee', JSON.stringify(attendeeData));
+            console.log('[Registration] Data saved to localStorage');
 
+            console.log('[Registration] Navigating to ticket page...');
             window.location.href = 'ticket.html';
         } catch (err) {
-            console.error('Registration save failed', err);
+            console.error('[Registration] Unexpected error during submission:', err);
             alert('Could not save your registration. Please check your connection and try again.');
             loadingOverlay.style.display = 'none';
         }
