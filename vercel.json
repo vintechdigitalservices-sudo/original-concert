@@ -1,6 +1,12 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/donation", "destination": "/donations", "permanent": true },
+    { "source": "/donation.html", "destination": "/donations", "permanent": true },
+    { "source": "/ticket", "has": [{ "type": "query", "key": "ticket" }], "destination": "/ticket-view", "permanent": true },
+    { "source": "/ticket.html", "has": [{ "type": "query", "key": "ticket" }], "destination": "/ticket-view", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

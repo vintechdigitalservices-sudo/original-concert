@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log('[Registration] Data saved to localStorage');
 
             console.log('[Registration] Navigating to ticket page...');
-            window.location.href = 'ticket.html';
+            window.location.href = 'ticket-view.html';
         } catch (err) {
             console.error('[Registration] Unexpected error during submission:', err);
             alert('Could not save your registration. Please check your connection and try again.');

@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Encodes a stable verification URL + structured ticket fields, rendered
     // with a quiet zone so any scanner can read it.
     function buildQrPayload() {
-        const verifyUrl = 'https://original-concert.vercel.app/ticket.html?ticket=' + encodeURIComponent(attendee.ticketId);
+        const verifyUrl = 'https://original-concert.vercel.app/ticket-view.html?ticket=' + encodeURIComponent(attendee.ticketId);
         return [
             'ORIGINAL CONCERT 3.0',
             'Event: Original Concert 3.0',
