@@ -36,5 +36,15 @@ const firebaseConfig = {
   } catch (err) {
     console.error('[firebase-config] Failed to init Firestore:', err);
   }
+  try {
+    if (typeof firebase.auth === 'function') {
+      window.auth = firebase.auth();
+      console.log('[firebase-config] Firebase Auth initialised for project:', firebaseConfig.projectId);
+    } else {
+      console.error('[firebase-config] firebase.auth is not available. Ensure firebase-auth-compat.js is loaded BEFORE js/firebase-config.js.');
+    }
+  } catch (err) {
+    console.error('[firebase-config] Failed to init Firebase Auth:', err);
+  }
   window.firebaseConfig = firebaseConfig;
 })();

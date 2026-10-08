@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Original Concert 3.0</title>
+    <meta name="description" content="Admin panel for Original Concert 3.0. Manage registered tickets.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#050505">
+    <link rel="icon" type="image/webp" href="assets/logo.webp">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-container {
+            min-height: 100vh;
+            padding: 40px 20px;
+            background: radial-gradient(circle at center, #1a0000 0%, #050505 100%);
+        }
+
+        .admin-container .container {
+            max-width: 1100px;
+        }
+
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .admin-header h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .admin-header .meta {
+            color: var(--secondary-text);
+            font-size: 0.85rem;
+        }
+
+        .admin-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-box .form-control {
+            flex: 1;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'Montserrat', sans-serif;
+            transition: var(--transition-smooth);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--glow-red);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--white);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            font-size: 1rem;
+        }
+
+        .btn-icon:hover {
+            border-color: var(--glow-red);
+            background: rgba(209, 0, 0, 0.1);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--glow-red);
+            border: 1px solid rgba(255, 59, 48, 0.4);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-danger:hover {
+            background: var(--deep-crimson);
+            color: var(--white);
+        }
+
+        .table-wrapper {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            overflow-x: auto;
+        }
+
+        .tickets-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+        }
+
+        .tickets-table th,
+        .tickets-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--glass-border);
+            vertical-align: middle;
+        }
+
+        .tickets-table th {
+            color: var(--secondary-text);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .tickets-table tbody tr {
+            transition: var(--transition-smooth);
+        }
+
+        .tickets-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tickets-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tickets-table .ticket-photo {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--glass-border);
+        }
+
+        .tickets-table .ticket-photo--empty {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--secondary-text);
+            font-size: 0.7rem;
+        }
+
+        .tickets-table .ticket-id {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 0.05em;
+            color: var(--gold-accent);
+            white-space: nowrap;
+        }
+
+        .tickets-table .created-at {
+            color: var(--secondary-text);
+            white-space: nowrap;
+            font-size: 0.75rem;
+        }
+
+        .tickets-table .actions {
+            white-space: nowrap;
+        }
+
+        .status-box {
+            padding: 30px;
+            text-align: center;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+
+        .status-box .spinner {
+            margin: 0 auto 15px;
+        }
+
+        .status-box .btn-secondary {
+            margin-top: 15px;
+        }
+
+        .error-message {
+            color: var(--glow-red);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--surface-color);
+            border: 1px solid var(--glass-border);
+            border-left: 3px solid var(--glow-red);
+            color: var(--white);
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            z-index: 3000;
+            transition: var(--transition-smooth);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            padding: 10px 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-secondary:hover {
+            background: var(--glass-bg);
+        }
+
+        .admin-auth {
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .admin-auth h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .admin-auth p {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .login-error {
+            color: var(--glow-red);
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+            display: none;
+            background: rgba(255, 59, 48, 0.08);
+            border: 1px solid rgba(255, 59, 48, 0.3);
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper .form-control {
+            padding-right: 45px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--secondary-text);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .toggle-password:hover {
+            color: var(--white);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--surface-color);
+            width: 100%;
+            max-width: 440px;
+            border-radius: 20px;
+            padding: 35px 30px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.4);
+            color: var(--glow-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content h2 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+            color: var(--glow-red);
+        }
+
+        .modal-content p {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-bottom: 22px;
+            line-height: 1.6;
+        }
+
+        .modal-summary {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .modal-summary div {
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+        }
+
+        .modal-summary div:last-child {
+            margin-bottom: 0;
+        }
+
+        .modal-summary .summary-label {
+            color: var(--secondary-text);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .modal-summary .summary-value {
+            color: var(--white);
+            word-break: break-word;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-actions .btn-secondary,
+        .modal-actions .btn-danger {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+        }
+
+        .modal-actions .btn-danger {
+            background: var(--deep-crimson);
+            color: var(--white);
+        }
+
+        .modal-actions .btn-danger:hover {
+            background: var(--glow-red);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo"><img src="assets/logo.webp" alt="Throne Nation Logo">THRONE <span>NATION</span></a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="donations.html" class="btn-primary" style="padding: 8px 20px; font-size: 0.8rem;">Get Ticket</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="admin-container" style="margin-top: 80px;">
+        <div class="container">
+            <div id="login-card" class="admin-auth glass-card">
+                <h1 class="heading-font">Admin Login</h1>
+                <p>Sign in to manage registered tickets.</p>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="admin@example.com" autocomplete="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" class="form-control" placeholder="Enter your password" autocomplete="current-password" required>
+                        <button type="button" class="toggle-password" id="toggle-password" title="Show password" aria-label="Show password">
+                            <svg class="eye-icon eye-open" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            <svg class="eye-icon eye-closed" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"></path><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"></path><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="login-error" class="login-error"></div>
+                <button id="btn-login" class="btn-primary" style="width: 100%;">Sign In</button>
+            </div>
+
+            <div id="admin-panel" style="display: none;">
+                <div class="admin-header">
+                    <div>
+                        <h1 class="heading-font">Ticket Admin</h1>
+                        <div class="meta" id="admin-meta">Manage registered tickets</div>
+                    </div>
+                    <button id="btn-logout" class="btn-secondary">Logout</button>
+                </div>
+
+                <div class="admin-toolbar">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="form-control" placeholder="Search by name, email, phone, or ticket ID...">
+                    </div>
+                    <button class="btn-icon" id="btn-refresh" title="Refresh" aria-label="Refresh">&olarr;</button>
+                </div>
+
+                <div class="table-wrapper" id="table-wrapper">
+                    <div class="status-box" id="status-box">
+                        <div class="spinner" id="table-spinner"></div>
+                        <p id="status-text">Loading tickets...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-container container">
+            <div class="footer-brand">
+                <div class="footer-title">Stream Guys NG X Throne Nation</div>
+                <div>&copy; 2026 Throne Nation. All rights reserved.</div>
+            </div>
+            <div class="footer-links">
+                <a href="terms.html">Terms of Service</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal" id="delete-modal">
+        <div class="modal-content">
+            <div class="modal-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </div>
+            <h2 class="heading-font">Delete Ticket?</h2>
+            <p>This will permanently remove the attendee's ticket. This action cannot be undone.</p>
+            <div class="modal-summary">
+                <div><span class="summary-label">Name</span><br><span class="summary-value" id="delete-name">—</span></div>
+                <div><span class="summary-label">Ticket ID</span><br><span class="summary-value" id="delete-ticket-id">—</span></div>
+                <div><span class="summary-label">Email</span><br><span class="summary-value" id="delete-email">—</span></div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" id="btn-cancel-delete">Cancel</button>
+                <button class="btn-danger" id="btn-confirm-delete">Delete Ticket</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

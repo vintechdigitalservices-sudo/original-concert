@@ -2,23 +2,27 @@ rules_version = '2';
 
 // Firestore security rules for the Original Concert 3.0 site.
 //
-// This is a public, no-login registration site, so the "tickets" collection
-// must accept writes directly from the browser. Without these rules, Firestore
-// defaults to locked-down (deny all) rules and the first save will fail/hang,
-// which is exactly the "stuck at submitting" bug. These rules let the very
-// first successful write auto-create the "tickets" collection.
+// The "tickets" collection must stay publicly READable and CREATE-able so the
+// public no-login registration flow and the QR verification page keep working.
+// However, destructive/tampering operations are locked down:
+//   - update  : denied (existing tickets cannot be edited from the browser)
+//   - delete  : allowed ONLY for the authenticated admin account
+// (Delete is also the only operation the admin page performs.)
 //
-// NOTE: `allow read, write: if true;` is intentionally broad for this demo.
-// If you later add authentication, tighten this to `if request.auth != null`
-// or restrict to specific emails.
+// NOTE: rule expressions are evaluated on the server and are NOT bypassable
+// by editing the client code, so this delete restriction is real enforcement
+// even though the admin login screen is a UI gate.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Public tickets data - allow anonymous reads and writes
-    // so the first save auto-creates the collection.
+    // Public tickets data - anonymous reads and creates allowed.
     match /tickets/{ticketId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create: if true;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && request.auth.token.email == "onyeanusiifeanyi@gmail.com";
     }
 
     // Deny access to every other collection.

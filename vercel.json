@@ -5,7 +5,8 @@
     { "source": "/donation", "destination": "/donations", "permanent": true },
     { "source": "/donation.html", "destination": "/donations", "permanent": true },
     { "source": "/ticket", "has": [{ "type": "query", "key": "ticket" }], "destination": "/ticket-view", "permanent": true },
-    { "source": "/ticket.html", "has": [{ "type": "query", "key": "ticket" }], "destination": "/ticket-view", "permanent": true }
+    { "source": "/ticket.html", "has": [{ "type": "query", "key": "ticket" }], "destination": "/ticket-view", "permanent": true },
+    { "source": "/admin.html", "destination": "/admin", "permanent": true }
   ],
   "headers": [
     {
